@@ -1,0 +1,102 @@
+<project name="game1" default="all">
+
+	<target name="init"
+		description="initialize the properties">
+		<tstamp/>
+		<property name="outdir" value="dist" />
+		<property name="author" value="ANTTI_POYHONEN" />
+
+		<property name="build" value="${outdir}/classes" />
+		<property name="javadoc_dir" value="${outdir}/javadoc"/>
+		<property name="jar" value="${outdir}/nostogame1.jar" />
+
+		<property name="src" value="src" />
+		<property name="deployable" value="nostogame1.zip" />
+
+		<path id="build.classpath">
+			<fileset dir="lib">
+				<include name="*.jar" />
+			</fileset>
+		</path>
+		<property name="build.classpath" refid="build.classpath" />
+	    <echo message="${build.classpath}" />
+	</target>
+
+
+	<target name="clean"
+		depends="init"
+		description="clean up the output directories">
+		<delete dir="${outdir}" />
+		<delete file="${deployable}" />
+	</target>
+
+	<target name="prepare"
+		depends="init"
+		description="prepare the output directory">
+		<mkdir dir="${build}" />
+		<copy todir="${build}">
+  		  <fileset dir="${src}" excludes="*.java"/>
+		</copy>
+	</target>	
+
+
+	<target name="compile"
+		depends="prepare"
+		description="compile the Java source">
+		<javac	srcdir="${src}"
+			destdir="${build}"
+			debug="on"
+			deprecation="on"
+			target="1.5"
+		    encoding="UTF-8"
+            source="1.5"
+			verbose="off"
+			depend="off" 
+		    classpath="${build.classpath}"/>
+	    
+	    <unjar dest="${build}">
+	        <fileset dir="lib">
+	            <include name="*.jar"/>
+	        </fileset>
+	    </unjar>
+
+	</target>
+
+	<target name="package"
+		depends="compile"
+		description="package the Java classes into a jar package">
+
+		<jar jarfile="${jar}"
+		     manifest="${src}/META-INF/MANIFEST.MF"
+		     basedir="${build}" />
+	</target>
+
+
+
+	<target name="deploy"
+		depends="package"
+		description="make a deployable package">
+
+		<copy file="build.xml" toFile="${outdir}/build.xml" />
+		<copy todir="${outdir}/${src}">
+			<fileset dir="${src}" />
+		</copy>
+		<zip zipfile="${deployable}" basedir="${outdir}" />
+	</target>
+
+	<target name="all"
+		depends="clean,package"
+		description="build all">
+	</target>
+	
+	<target name="javadoc" depends="compile" description="make the javadocs">
+          <mkdir dir="${javadoc_dir}"/>
+          <javadoc packagenames="*"
+             sourcepath="src"
+	     destdir="${javadoc_dir}"
+	     classpath="${classpath}"
+             author="true"
+	     version="true"
+	     windowtitle="Nosto Fun Game1"/>
+    </target>
+</project>

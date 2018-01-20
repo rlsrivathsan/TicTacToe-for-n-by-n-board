@@ -1,0 +1,1 @@
+Main-Class: com.tictactoe.fun.game1.Main
